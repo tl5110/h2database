@@ -108,6 +108,8 @@ public final class BuiltinFunctions {
                 "CSVREAD",
                 // LinkSchemaFunction
                 "LINK_SCHEMA",
+                // FuzzyMatchFunction
+                "FUZZY_MATCH",
                 //
         };
         HashSet<String> set = new HashSet<>(128);

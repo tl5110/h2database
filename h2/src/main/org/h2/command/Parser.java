@@ -355,6 +355,7 @@ import org.h2.expression.function.table.CSVReadFunction;
 import org.h2.expression.function.table.JavaTableFunction;
 import org.h2.expression.function.table.LinkSchemaFunction;
 import org.h2.expression.function.table.TableFunction;
+import org.h2.expression.function.FuzzyMatchFunction;
 import org.h2.index.Index;
 import org.h2.message.DbException;
 import org.h2.mode.FunctionsPostgreSQL;
@@ -4213,6 +4214,8 @@ public final class Parser extends ParserBase {
             return readParameters(new RegexpFunction(RegexpFunction.REGEXP_REPLACE));
         case "REGEXP_SUBSTR":
             return readParameters(new RegexpFunction(RegexpFunction.REGEXP_SUBSTR));
+        case "FUZZY_MATCH":
+            return readParameters(new FuzzyMatchFunction());
         case "XMLATTR":
             return readParameters(new XMLFunction(XMLFunction.XMLATTR));
         case "XMLCDATA":
