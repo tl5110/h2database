@@ -250,6 +250,9 @@ import org.h2.util.Task;
 import org.h2.util.ThreadDeadlockDetector;
 import org.h2.util.Utils;
 
+import org.h2.test.db.TestFuzzyMatch;
+import org.h2.test.unit.TestFuzzyMatchUtils;
+
 /**
  * The main test application. JUnit is not used because loops are easier to
  * write in regular java applications (most tests are ran multiple times using
@@ -262,32 +265,32 @@ public class TestAll {
         initSslContext();
     }
 
-/*
-
-PIT test:
-java org.pitest.mutationtest.MutationCoverageReport
---reportDir data --targetClasses org.h2.dev.store.btree.StreamStore*
---targetTests org.h2.test.store.TestStreamStore
---sourceDirs src/test,src/tools
-
-Dump heap on out of memory:
--XX:+HeapDumpOnOutOfMemoryError
-
-Random test:
-java15
-cd h2database/h2/bin
-del *.db
-start cmd /k "java -cp .;%H2DRIVERS% org.h2.test.TestAll join >testJoin.txt"
-start cmd /k "java -cp . org.h2.test.TestAll synth >testSynth.txt"
-start cmd /k "java -cp . org.h2.test.TestAll all >testAll.txt"
-start cmd /k "java -cp . org.h2.test.TestAll random >testRandom.txt"
-start cmd /k "java -cp . org.h2.test.TestAll btree >testBtree.txt"
-start cmd /k "java -cp . org.h2.test.TestAll halt >testHalt.txt"
-java -cp . org.h2.test.TestAll crash >testCrash.txt
-
-java org.h2.test.TestAll timer
-
-*/
+    /*
+     * 
+     * PIT test:
+     * java org.pitest.mutationtest.MutationCoverageReport
+     * --reportDir data --targetClasses org.h2.dev.store.btree.StreamStore*
+     * --targetTests org.h2.test.store.TestStreamStore
+     * --sourceDirs src/test,src/tools
+     * 
+     * Dump heap on out of memory:
+     * -XX:+HeapDumpOnOutOfMemoryError
+     * 
+     * Random test:
+     * java15
+     * cd h2database/h2/bin
+     * del *.db
+     * start cmd /k "java -cp .;%H2DRIVERS% org.h2.test.TestAll join >testJoin.txt"
+     * start cmd /k "java -cp . org.h2.test.TestAll synth >testSynth.txt"
+     * start cmd /k "java -cp . org.h2.test.TestAll all >testAll.txt"
+     * start cmd /k "java -cp . org.h2.test.TestAll random >testRandom.txt"
+     * start cmd /k "java -cp . org.h2.test.TestAll btree >testBtree.txt"
+     * start cmd /k "java -cp . org.h2.test.TestAll halt >testHalt.txt"
+     * java -cp . org.h2.test.TestAll crash >testCrash.txt
+     * 
+     * java org.h2.test.TestAll timer
+     * 
+     */
 
     /**
      * Set to true if any of the tests fail. Used to return an error code from
@@ -419,7 +422,6 @@ java org.h2.test.TestAll timer
     /** If not null the database should be opened with the collation parameter */
     public String collation;
 
-
     /**
      * The AB-BA locking detector.
      */
@@ -469,7 +471,7 @@ java org.h2.test.TestAll timer
         System.setProperty("h2.delayWrongPasswordMax", "0");
         System.setProperty("h2.useThreadContextClassLoader", "true");
         System.setProperty("h2.allowedClasses",
-                        "java.lang.*,java.math.*,java.io.*" +
+                "java.lang.*,java.math.*,java.io.*" +
                         ",java.util.Date,java.sql.Timestamp" +
                         ",java.awt.Point" +
                         ",javax.naming.InitialContext" +
@@ -477,62 +479,62 @@ java org.h2.test.TestAll timer
                         ",org.h2.Driver" +
                         ",org.h2.command.dml.ScriptCommand" +
                         ",org.h2.fulltext.*" +
-//                        ",org.h2.fulltext.FullText" +
-//                        ",org.h2.fulltext.FullText$FullTextTrigger" +
-//                        ",org.h2.fulltext.FullTextLucene" +
-//                        ",org.h2.fulltext.FullTextLucene$FullTextTrigger" +
+                        // ",org.h2.fulltext.FullText" +
+                        // ",org.h2.fulltext.FullText$FullTextTrigger" +
+                        // ",org.h2.fulltext.FullTextLucene" +
+                        // ",org.h2.fulltext.FullTextLucene$FullTextTrigger" +
                         ",org.h2.mvstore.db.MVTableEngine" +
                         ",org.h2.samples.*" +
-//                        ",org.h2.samples.Function" +
-//                        ",org.h2.samples.RowAccessRights" +
-//                        ",org.h2.samples.TriggerPassData" +
-//                        ",org.h2.samples.TriggerSample$MyTrigger" +
-//                        ",org.h2.samples.UpdatableView" +
+                        // ",org.h2.samples.Function" +
+                        // ",org.h2.samples.RowAccessRights" +
+                        // ",org.h2.samples.TriggerPassData" +
+                        // ",org.h2.samples.TriggerSample$MyTrigger" +
+                        // ",org.h2.samples.UpdatableView" +
                         ",org.h2.server.TcpServer" +
                         ",org.h2.test.db.*" +
-//                        ",org.h2.test.db.TestFunctions" +
-//                        ",org.h2.test.db.TestFunctionOverload" +
-//                        ",org.h2.test.db.TestIndex" +
-//                        ",org.h2.test.db.TestListener" +
-//                        ",org.h2.test.db.TestMergeUsing" +
-//                        ",org.h2.test.db.TestMultiDimension" +
-//                        ",org.h2.test.db.TestFunctions$MedianString" +
-//                        ",org.h2.test.db.TestFunctions$MedianStringType" +
-//                        ",org.h2.test.db.TestLob" +
-//                        ",org.h2.test.db.TestLobObject" +
-//                        ",org.h2.test.db.TestMultiConn$MyDatabaseEventListener" +
-//                        ",org.h2.test.db.TestOpenClose$MyDatabaseEventListener" +
-//                        ",org.h2.test.db.TestOptimizations" +
-//                        ",org.h2.test.db.TestRights$TestTrigger" +
-//                        ",org.h2.test.db.TestRunscript" +
-//                        ",org.h2.test.db.TestSequence$TriggerTest" +
-//                        ",org.h2.test.db.TestTableEngines$EndlessTableEngine" +
-//                        ",org.h2.test.db.TestTableEngines$OneRowTableEngine" +
-//                        ",org.h2.test.db.TestTableEngines$TreeSetIndexTableEngine" +
-//                        ",org.h2.test.db.TestTriggersConstraints" +
-//                        ",org.h2.test.db.TestTriggersConstraints$ConcurrentTrigger" +
-//                        ",org.h2.test.db.TestTriggersConstraints$DeleteTrigger" +
-//                        ",org.h2.test.db.TestTriggersConstraints$NullTrigger" +
-//                        ",org.h2.test.db.TestTriggersConstraints$NullTriggerAdapter" +
-//                        ",org.h2.test.db.TestTriggersConstraints$TestSelect" +
-//                        ",org.h2.test.db.TestTriggersConstraints$TestTriggerAdapter" +
-//                        ",org.h2.test.db.TestTriggersConstraints$TestTriggerAlterTable" +
-//                        ",org.h2.test.db.TestTriggersConstraints$TestView" +
-//                        ",org.h2.test.db.TestTriggersConstraints$TestViewGeneratedKeys" +
-//                        ",org.h2.test.db.TestTriggersConstraints$WrongTrigger" +
-//                        ",org.h2.test.db.TestTriggersConstraints$WrongTriggerAdapter" +
-//                        ",org.h2.test.db.TestView" +
+                        // ",org.h2.test.db.TestFunctions" +
+                        // ",org.h2.test.db.TestFunctionOverload" +
+                        // ",org.h2.test.db.TestIndex" +
+                        // ",org.h2.test.db.TestListener" +
+                        // ",org.h2.test.db.TestMergeUsing" +
+                        // ",org.h2.test.db.TestMultiDimension" +
+                        // ",org.h2.test.db.TestFunctions$MedianString" +
+                        // ",org.h2.test.db.TestFunctions$MedianStringType" +
+                        // ",org.h2.test.db.TestLob" +
+                        // ",org.h2.test.db.TestLobObject" +
+                        // ",org.h2.test.db.TestMultiConn$MyDatabaseEventListener" +
+                        // ",org.h2.test.db.TestOpenClose$MyDatabaseEventListener" +
+                        // ",org.h2.test.db.TestOptimizations" +
+                        // ",org.h2.test.db.TestRights$TestTrigger" +
+                        // ",org.h2.test.db.TestRunscript" +
+                        // ",org.h2.test.db.TestSequence$TriggerTest" +
+                        // ",org.h2.test.db.TestTableEngines$EndlessTableEngine" +
+                        // ",org.h2.test.db.TestTableEngines$OneRowTableEngine" +
+                        // ",org.h2.test.db.TestTableEngines$TreeSetIndexTableEngine" +
+                        // ",org.h2.test.db.TestTriggersConstraints" +
+                        // ",org.h2.test.db.TestTriggersConstraints$ConcurrentTrigger" +
+                        // ",org.h2.test.db.TestTriggersConstraints$DeleteTrigger" +
+                        // ",org.h2.test.db.TestTriggersConstraints$NullTrigger" +
+                        // ",org.h2.test.db.TestTriggersConstraints$NullTriggerAdapter" +
+                        // ",org.h2.test.db.TestTriggersConstraints$TestSelect" +
+                        // ",org.h2.test.db.TestTriggersConstraints$TestTriggerAdapter" +
+                        // ",org.h2.test.db.TestTriggersConstraints$TestTriggerAlterTable" +
+                        // ",org.h2.test.db.TestTriggersConstraints$TestView" +
+                        // ",org.h2.test.db.TestTriggersConstraints$TestViewGeneratedKeys" +
+                        // ",org.h2.test.db.TestTriggersConstraints$WrongTrigger" +
+                        // ",org.h2.test.db.TestTriggersConstraints$WrongTriggerAdapter" +
+                        // ",org.h2.test.db.TestView" +
                         ",org.h2.test.jdbc.*" +
-//                        ",org.h2.test.jdbc.TestBatchUpdates" +
-//                        ",org.h2.test.jdbc.TestCallableStatement" +
-//                        ",org.h2.test.jdbc.TestCancel" +
-//                        ",org.h2.test.jdbc.TestDatabaseEventListener$*" +
-//                        ",org.h2.test.jdbc.TestJavaObjectSerializer$*" +
-//                        ",org.h2.test.jdbc.TestUrlJavaObjectSerializer$FakeJavaObjectSerializer" +
+                        // ",org.h2.test.jdbc.TestBatchUpdates" +
+                        // ",org.h2.test.jdbc.TestCallableStatement" +
+                        // ",org.h2.test.jdbc.TestCancel" +
+                        // ",org.h2.test.jdbc.TestDatabaseEventListener$*" +
+                        // ",org.h2.test.jdbc.TestJavaObjectSerializer$*" +
+                        // ",org.h2.test.jdbc.TestUrlJavaObjectSerializer$FakeJavaObjectSerializer" +
                         ",org.h2.test.scripts.*" +
-//                        ",org.h2.test.scripts.Trigger1" +
-//                        ",org.h2.test.scripts.Trigger2" +
-//                        ",org.h2.test.scripts.Aggregate1" +
+                        // ",org.h2.test.scripts.Trigger1" +
+                        // ",org.h2.test.scripts.Trigger2" +
+                        // ",org.h2.test.scripts.Aggregate1" +
                         ",org.h2.test.unit.TestAutoReconnect$MyDatabaseEventListener" +
                         ",org.h2.tools.Recover" +
                         ",TestClassFactory" +
@@ -543,31 +545,32 @@ java org.h2.test.TestAll timer
         // speedup
         // System.setProperty("h2.syncMethod", "");
 
-/*
-
-recovery tests with small freeList pages, page size 64
-
-reopen org.h2.test.unit.TestPageStore
--Xmx1500m -D reopenOffset=3 -D reopenShift=1
-
-power failure test
-power failure test: larger binaries and additional index.
-power failure test with randomly generating / dropping indexes and tables.
-
-drop table test;
-create table test(id identity, name varchar(100) default space(100));
-@LOOP 10 insert into test select null, null from system_range(1, 100000);
-delete from test;
-
-documentation: review package and class level javadocs
-documentation: rolling review at main.html
-
--------------
-
-kill a test:
-kill -9 `jps -l | grep "org.h2.test." | cut -d " " -f 1`
-
-*/
+        /*
+         * 
+         * recovery tests with small freeList pages, page size 64
+         * 
+         * reopen org.h2.test.unit.TestPageStore
+         * -Xmx1500m -D reopenOffset=3 -D reopenShift=1
+         * 
+         * power failure test
+         * power failure test: larger binaries and additional index.
+         * power failure test with randomly generating / dropping indexes and tables.
+         * 
+         * drop table test;
+         * create table test(id identity, name varchar(100) default space(100));
+         * 
+         * @LOOP 10 insert into test select null, null from system_range(1, 100000);
+         * delete from test;
+         * 
+         * documentation: review package and class level javadocs
+         * documentation: rolling review at main.html
+         * 
+         * -------------
+         * 
+         * kill a test:
+         * kill -9 `jps -l | grep "org.h2.test." | cut -d " " -f 1`
+         * 
+         */
         TestAll test = new TestAll();
         if (args.length > 0) {
             if ("ci".equals(args[0])) {
@@ -805,6 +808,8 @@ kill -9 `jps -l | grep "org.h2.test." | cut -d " " -f 1`
             addTest(new TestCompatibilitySQLServer());
             addTest(new TestCsv());
             addTest(new TestDeadlock());
+            addTest(new TestFuzzyMatch());
+
             if (vmlens) {
                 return;
             }
@@ -935,7 +940,6 @@ kill -9 `jps -l | grep "org.h2.test." | cut -d " " -f 1`
             addTest(new TestOutOfMemory());
             addTest(new TestIgnoreCatalogs());
 
-
             runAddedTests(1);
         } finally {
             afterTest();
@@ -1042,6 +1046,7 @@ kill -9 `jps -l | grep "org.h2.test." | cut -d " " -f 1`
         addTest(new TestStringUtils());
         addTest(new TestTraceSystem());
         addTest(new TestUtils());
+        addTest(new TestFuzzyMatchUtils());
         addTest(new TestUpgrade());
 
         runAddedTests();
@@ -1216,22 +1221,22 @@ kill -9 `jps -l | grep "org.h2.test." | cut -d " " -f 1`
                 " @ " + new java.sql.Timestamp(System.currentTimeMillis()).toString());
         System.out.println("Java " +
                 prop.getProperty("java.runtime.version") + ", " +
-                prop.getProperty("java.vm.name")+", " +
+                prop.getProperty("java.vm.name") + ", " +
                 prop.getProperty("java.vendor") + ", " +
                 prop.getProperty("sun.arch.data.model"));
         System.out.println(
                 prop.getProperty("os.name") + ", " +
-                prop.getProperty("os.arch")+", "+
-                prop.getProperty("os.version")+", "+
-                prop.getProperty("sun.os.patch.level")+", "+
-                prop.getProperty("file.separator")+" "+
-                prop.getProperty("path.separator")+" "+
-                StringUtils.javaEncode(prop.getProperty("line.separator")) + " " +
-                prop.getProperty("user.country") + " " +
-                prop.getProperty("user.language") + " " +
-                prop.getProperty("user.timezone") + " " +
-                prop.getProperty("user.variant")+" "+
-                prop.getProperty("file.encoding"));
+                        prop.getProperty("os.arch") + ", " +
+                        prop.getProperty("os.version") + ", " +
+                        prop.getProperty("sun.os.patch.level") + ", " +
+                        prop.getProperty("file.separator") + " " +
+                        prop.getProperty("path.separator") + " " +
+                        StringUtils.javaEncode(prop.getProperty("line.separator")) + " " +
+                        prop.getProperty("user.country") + " " +
+                        prop.getProperty("user.language") + " " +
+                        prop.getProperty("user.timezone") + " " +
+                        prop.getProperty("user.variant") + " " +
+                        prop.getProperty("file.encoding"));
     }
 
     @Override
